@@ -21,7 +21,7 @@ setup(
     zip_safe=True,
     maintainer='wheeltec',
     maintainer_email='wheeltec@localhost',
-    description='Safe RGB-D tennis-ball follower for WHEELTEC ROS 2 robots.',
+    description='Safe RGB-D ball trackers and follower for WHEELTEC ROS 2 robots.',
     license='Apache-2.0',
     entry_points={
         'console_scripts': [
