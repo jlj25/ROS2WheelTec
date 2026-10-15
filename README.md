@@ -29,6 +29,19 @@ changes. The YOLO tracker also requires Ultralytics and
 `/home/wheeltec/models/yolo11n.pt`; follow the
 [Jetson YOLO setup guide](docs/YOLO_JETSON_SETUP_zh-CN.md).
 
+## Current YOLO detection scope
+
+The default `yolo11n.pt` model uses COCO class 32, `sports ball`. It does not
+distinguish tennis balls, footballs, basketballs, volleyballs, table-tennis
+balls, or other subtypes. Common sports balls may be detected, but only a tennis
+ball has been validated on the robot so far; other ball types are not yet
+verified.
+
+Very small, heavily occluded, unusual, or under-represented balls may be missed.
+If the depth camera has no valid reading, the monocular fallback assumes
+`ball_diameter_m: 0.067`, approximately a tennis-ball diameter. Change that
+parameter or disable the fallback when using a substantially different ball.
+
 ## Safety design
 
 - The default launch starts only the tracker and cannot move the robot.
