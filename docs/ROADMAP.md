@@ -1,0 +1,21 @@
+# Roadmap
+
+## Planned: YOLO tennis-ball detector
+
+- Add a lightweight YOLO detector as a second tracker implementation.
+- Preserve the existing `/tennis_ball/visible` and `/tennis_ball/position` interfaces so the motion controller does not need to change.
+- Fine-tune a single `tennis_ball` class with laboratory images.
+- Include the yellow-green inflatable pool and other similarly colored objects as negative training examples.
+- Keep depth-based distance measurement with the known-size monocular fallback.
+- Run the color tracker and YOLO tracker on separate topics during A/B testing.
+
+## Planned: obstacle avoidance while tracking
+
+- Extend the current stop-only lidar protection into a low-speed avoidance state machine.
+- Compare free space on the left and right before choosing a detour direction.
+- Handle temporary target loss while going around an obstacle.
+- Reacquire the ball before returning to normal tracking.
+- Keep front and rear emergency-stop gates active throughout avoidance.
+
+The current release performs emergency stopping only; it does not autonomously route around obstacles.
+

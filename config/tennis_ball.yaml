@@ -1,0 +1,69 @@
+tennis_ball_tracker:
+  ros__parameters:
+    color_image_topic: /camera/color/image_raw
+    depth_image_topic: /camera/depth/image_raw
+    camera_info_topic: /camera/color/camera_info
+    position_topic: /tennis_ball/position
+    visible_topic: /tennis_ball/visible
+    debug_image_topic: /tennis_ball/debug_image
+
+    # OpenCV HSV values. These defaults target a fluorescent yellow-green tennis ball.
+    lower_h: 22
+    lower_s: 65
+    lower_v: 65
+    upper_h: 58
+    upper_s: 255
+    upper_v: 255
+
+    min_contour_area: 70.0
+    max_contour_area: 80000.0
+    min_radius_px: 4.0
+    min_circularity: 0.52
+    min_aspect_ratio: 0.55
+    max_aspect_ratio: 1.80
+    morphology_kernel: 5
+
+    min_depth_m: 0.30
+    max_depth_m: 3.00
+    minimum_depth_samples: 8
+    depth_unit_scale: 0.0  # 0=auto; set explicitly only if the driver uses unusual units.
+    allow_monocular_fallback: true
+    ball_diameter_m: 0.067
+    frame_timeout_s: 0.30
+    publish_debug_image: false
+
+tennis_ball_follower:
+  ros__parameters:
+    position_topic: /tennis_ball/position
+    visible_topic: /tennis_ball/visible
+    scan_topic: /scan
+    enable_topic: /tennis_ball_follower/enable
+    cmd_vel_topic: /cmd_vel
+    state_topic: /tennis_ball_follower/state
+
+    # Safety first: movement requires an explicit enable message after every start.
+    enabled_on_start: false
+    require_lidar: true
+    target_timeout_s: 0.25
+    lidar_timeout_s: 0.50
+    control_rate_hz: 20.0
+
+    target_distance_m: 0.50
+    distance_deadband_m: 0.03
+    angle_deadband_rad: 0.04
+    linear_angle_limit_rad: 0.50
+    kp_linear: 0.50
+    kp_angular: 1.60
+
+    max_linear_speed_mps: 0.25
+    allow_reverse: true
+    max_reverse_speed_mps: 0.06
+    max_angular_speed_rps: 0.55
+    max_linear_accel_mps2: 0.55
+    max_angular_accel_rps2: 1.40
+
+    lidar_front_half_angle_deg: 28.0
+    lidar_stop_distance_m: 0.45
+    lidar_rear_half_angle_deg: 28.0
+    lidar_rear_stop_distance_m: 0.45
+

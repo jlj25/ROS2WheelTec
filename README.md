@@ -10,7 +10,6 @@ gated velocity controller. It does not modify the vendor packages.
 - Movement requires a fresh target and, by default, a fresh lidar scan.
 - Target loss, stale lidar data, or a front obstacle publishes a zero Twist.
 - Optional low-speed reverse correction is guarded by a separate rear lidar sector.
-- The controller never commands reverse motion.
 - Current speed limits are 0.25 m/s forward, 0.06 m/s reverse, and 0.55 rad/s angular.
 - The target distance is 0.50 m with a 0.03 m deadband.
 - Forward and reverse motion use separate lidar safety sectors.
@@ -78,6 +77,7 @@ Stop immediately with:
 
 ```bash
 ros2 topic pub --once /tennis_ball_follower/enable std_msgs/msg/Bool "{data: false}"
+```
 
 ## Reverse correction
 
@@ -86,7 +86,6 @@ target distance. The default reverse limit is 0.06 m/s. Reverse motion is
 allowed only with fresh lidar data and a clear rear sector; otherwise the
 controller enters `REAR_OBSTACLE_STOP`. Keep the lidar scan plane clear for a
 full 360 degrees and never disable the rear safety check for floor testing.
-```
 
 `Ctrl+C` also publishes a zero Twist during normal shutdown.
 
