@@ -1,5 +1,7 @@
 # Tennis Ball Follower for WHEELTEC ROS 2
 
+[English](README.md) | [简体中文](README_CN.md)
+
 This package adds a conservative RGB-D tennis-ball tracker and a separately
 gated velocity controller. It does not modify the vendor packages.
 
