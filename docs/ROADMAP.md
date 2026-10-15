@@ -1,10 +1,11 @@
 # Roadmap
 
-## Planned: YOLO tennis-ball detector
+## In progress: YOLO general ball detector
 
-- Add a lightweight YOLO detector as a second tracker implementation.
+- Add a lightweight YOLO detector as a second tracker implementation. The first implementation is included in version 0.3.0.
 - Preserve the existing `/tennis_ball/visible` and `/tennis_ball/position` interfaces so the motion controller does not need to change.
-- Fine-tune a single `tennis_ball` class with laboratory images.
+- Start with the pretrained COCO `sports ball` class so detection is not tied to color.
+- If pretrained detection is insufficient for very small balls, fine-tune a single general `ball` class with laboratory images.
 - Include the yellow-green inflatable pool and other similarly colored objects as negative training examples.
 - Keep depth-based distance measurement with the known-size monocular fallback.
 - Run the color tracker and YOLO tracker on separate topics during A/B testing.
