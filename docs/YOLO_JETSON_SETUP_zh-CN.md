@@ -60,6 +60,8 @@ python3 -m pip install --user --no-deps ultralytics
 
 `--no-deps` 很重要：它避免 pip 替换 Jetson 专用的 PyTorch、Torchvision、OpenCV 或 NumPy。安装后使用 `YOLO_AUTOINSTALL=False` 做导入检查；缺少的普通 Python 依赖再逐项补充。
 
+如果 PyTorch GPU 推理已经成功，`pip check` 仍可能报告 `opencv-python`、`polars`、`nvidia-ml-py` 或 `ultralytics-thop` 缺失。实时检测路径不使用这些附加功能时无需安装。特别不要为了满足包元数据而安装另一个 OpenCV wheel；小车已有的 `opencv-contrib-python` 与 ROS `cv_bridge` 能正常工作即可。
+
 ## 第二步：编译 0.3.0 软件包
 
 将新版软件包放入工作空间后执行：
