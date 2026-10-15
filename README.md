@@ -1,8 +1,8 @@
-# Tennis Ball Follower for WHEELTEC ROS 2
+# Ball Follower for WHEELTEC ROS 2
 
 [English](README.md) | [简体中文](README_CN.md)
 
-This package adds a conservative RGB-D tennis-ball tracker and a separately
+This package adds conservative RGB-D ball trackers and a separately
 gated velocity controller. It does not modify the vendor packages.
 
 Version 0.3.0 also includes an optional YOLO detector for general sports balls.
@@ -12,7 +12,7 @@ The original HSV tracker remains available, and neither tracker publishes
 Jetson setup and first-test workflow.
 
 The first Jetson Orin NX hardware test successfully detected and followed a
-tennis ball at reduced speed. See the
+small ball at reduced speed. See the
 [v0.3.0 Chinese update notes](docs/UPDATE_NOTES_v0.3.0_zh-CN.md) for measured
 rates, validated behavior, and current limitations.
 
@@ -59,7 +59,7 @@ rqt_image_view
 ```
 
 In `rqt_image_view`, select `/tennis_ball/debug_image`. Adjust the HSV values in
-`config/tennis_ball.yaml` until only the tennis ball is white in the mask inset.
+`config/tennis_ball.yaml` until only the target ball is white in the mask inset.
 
 After installing the optional YOLO runtime, start general ball detection with:
 
