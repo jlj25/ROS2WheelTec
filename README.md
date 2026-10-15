@@ -132,6 +132,25 @@ same compatibility topics. The YOLO debug image is
 `/tennis_ball/yolo_debug_image`; the HSV debug image is
 `/tennis_ball/debug_image`.
 
+### Optional: view YOLO detection boxes
+
+Install and start the image viewer:
+
+```bash
+sudo apt install ros-humble-rqt-image-view
+source /opt/ros/humble/setup.bash
+rqt_image_view
+```
+
+Select `/tennis_ball/yolo_debug_image` from the topic dropdown. The green box
+shows the selected ball, together with confidence and RGB-D distance. For a
+remote SSH session, start an X server on the client first and connect with
+`ssh -Y wheeltec@<robot-ip>`; `echo $DISPLAY` should not be empty.
+
+`publish_debug_image` must be `true` in `config/ball_yolo.yaml`. Close the viewer
+after inspection, or set the parameter to `false` when benchmarking maximum
+output frequency; this does not disable detection or the control topics.
+
 ## Stage 3: controller without enabling movement
 
 After the base, sensors, and one detector are working, start the controller in
