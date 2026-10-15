@@ -89,7 +89,7 @@ class BallYoloTracker(Node):
             'image_size': 640,
             'max_detections': 10,
             'device': '0',
-            'use_half_precision': True,
+            'inference_quantization': 16,
             'tracking_memory_s': 0.50,
             'tracking_position_weight': 0.25,
             'depth_roi_scale': 0.50,
@@ -121,6 +121,8 @@ class BallYoloTracker(Node):
             self.get_parameter('max_detections').value)
         self.minimum_depth_samples = int(
             self.get_parameter('minimum_depth_samples').value)
+        self.inference_quantization = int(
+            self.get_parameter('inference_quantization').value)
 
         numeric_names = (
             'confidence_threshold', 'iou_threshold', 'tracking_memory_s',
@@ -130,8 +132,6 @@ class BallYoloTracker(Node):
         for name in numeric_names:
             setattr(self, name, float(self.get_parameter(name).value))
 
-        self.use_half_precision = bool(
-            self.get_parameter('use_half_precision').value)
         self.allow_monocular_fallback = bool(
             self.get_parameter('allow_monocular_fallback').value)
         self.publish_debug_image = bool(
@@ -141,6 +141,8 @@ class BallYoloTracker(Node):
             raise ValueError('depth_roi_scale must be in (0, 1]')
         if self.ball_diameter_m <= 0.0:
             raise ValueError('ball_diameter_m must be positive')
+        if self.inference_quantization not in (16, 32):
+            raise ValueError('inference_quantization must be 16 or 32')
 
         expanded_model_path = os.path.expanduser(self.model_path)
         if expanded_model_path != self.model_path:
@@ -221,7 +223,7 @@ class BallYoloTracker(Node):
             classes=self.target_class_ids or None,
             max_det=self.max_detections,
             device=self.device,
-            half=self.use_half_precision,
+            quantize=self.inference_quantization,
             verbose=False)
         if not results or results[0].boxes is None:
             return None
