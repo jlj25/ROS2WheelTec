@@ -52,6 +52,14 @@ dpkg-query -W 'nvidia-jetpack' 'nvidia-tensorrt' 'tensorrt' 2>/dev/null
 
 根据这组输出再选择安装方式，避免破坏小车已有的 CUDA/PyTorch 环境。
 
+如果检查结果显示 NVIDIA PyTorch、Torchvision 和 TensorRT 均已存在且 CUDA 可用，只缺少 Ultralytics，先只安装 Ultralytics 本体：
+
+```bash
+python3 -m pip install --user --no-deps ultralytics
+```
+
+`--no-deps` 很重要：它避免 pip 替换 Jetson 专用的 PyTorch、Torchvision、OpenCV 或 NumPy。安装后使用 `YOLO_AUTOINSTALL=False` 做导入检查；缺少的普通 Python 依赖再逐项补充。
+
 ## 第二步：编译 0.3.0 软件包
 
 将新版软件包放入工作空间后执行：
