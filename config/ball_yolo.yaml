@@ -17,7 +17,7 @@ ball_yolo_tracker:
     image_size: 640
     max_detections: 10
     device: "0"
-    use_half_precision: true
+    inference_quantization: 16
 
     # Prefer a detection near the ball selected in the previous frame.
     tracking_memory_s: 0.50
