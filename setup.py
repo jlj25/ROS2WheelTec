@@ -8,7 +8,7 @@ package_name = 'tennis_ball_follower_ros2'
 
 setup(
     name=package_name,
-    version='0.2.0',
+    version='0.3.0',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/ament_index/resource_index/packages',
@@ -26,6 +26,7 @@ setup(
     entry_points={
         'console_scripts': [
             'tennis_ball_tracker = tennis_ball_follower_ros2.tennis_ball_tracker:main',
+            'ball_yolo_tracker = tennis_ball_follower_ros2.ball_yolo_tracker:main',
             'tennis_ball_follower = tennis_ball_follower_ros2.tennis_ball_follower:main',
         ],
     },
