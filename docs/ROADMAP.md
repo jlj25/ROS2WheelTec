@@ -20,6 +20,8 @@
 - Handle temporary target loss while going around an obstacle.
 - Reacquire the ball before returning to normal tracking.
 - Keep front and rear emergency-stop gates active throughout avoidance.
+- Start with the existing 2D lidar for local obstacle avoidance and evaluate its blind zones during hardware tests.
+- Add side, rear, or wide-angle cameras only if the lidar and front RGB-D camera do not provide sufficient coverage; additional cameras will require calibration, synchronization, and more compute.
 
 The current release performs emergency stopping only; it does not autonomously route around obstacles.
 
