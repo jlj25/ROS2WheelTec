@@ -5,6 +5,12 @@
 This package adds a conservative RGB-D tennis-ball tracker and a separately
 gated velocity controller. It does not modify the vendor packages.
 
+Version 0.3.0 also includes an optional YOLO detector for general sports balls.
+The original HSV tracker remains available, and neither tracker publishes
+`/cmd_vel` directly. See
+[`docs/YOLO_JETSON_SETUP_zh-CN.md`](docs/YOLO_JETSON_SETUP_zh-CN.md) for the
+Jetson setup and first-test workflow.
+
 ## Safety design
 
 - The default launch starts only the tracker and cannot move the robot.
@@ -49,6 +55,16 @@ rqt_image_view
 
 In `rqt_image_view`, select `/tennis_ball/debug_image`. Adjust the HSV values in
 `config/tennis_ball.yaml` until only the tennis ball is white in the mask inset.
+
+After installing the optional YOLO runtime, start general ball detection with:
+
+```bash
+ros2 launch tennis_ball_follower_ros2 ball_yolo_follow.launch.py
+```
+
+Do not run the HSV and YOLO trackers simultaneously because they publish the
+same compatibility topics. The YOLO debug image is
+`/tennis_ball/yolo_debug_image`.
 
 ## Stage 2: controller without enabling movement
 
