@@ -14,6 +14,12 @@
 
 当前实机验证环境为 ROS 2 Humble、Jetson Orin NX、Astra RGB-D 相机和雷神 N10Plus 激光雷达。其他小车或不同的话题名称需要修改配置后才能使用。使用 YOLO 检测器还需要按照 [Jetson YOLO 安装说明](docs/YOLO_JETSON_SETUP_zh-CN.md)安装 Ultralytics，并把 `yolo11n.pt` 放到 `/home/wheeltec/models/yolo11n.pt`。
 
+## YOLO 当前识别范围
+
+默认模型 `yolo11n.pt` 使用 COCO 的 `sports ball` 类（类别编号 `32`）。它只判断画面中的物体是否属于“运动用球”，不会进一步区分网球、足球、篮球、排球或乒乓球等具体种类。因此这些常见球类都有可能被识别，但目前实机只验证过网球，不能把其他球类视为已经测试通过。
+
+过小、严重遮挡、外观特殊或训练集中较少见的球可能无法识别。深度相机没有返回有效距离时，程序会按照配置中的 `ball_diameter_m: 0.067` 估算距离；该数值接近网球直径，换用尺寸差异较大的球时，备用估算距离会不准确，需要修改配置或关闭单目备用测距。
+
 ## 安全设计
 
 - 默认启动文件只运行检测器，不会控制小车运动。
@@ -161,5 +167,5 @@ ros2 topic pub --once \
 - `distance` 使用毫米，以兼容 WHEELTEC 原有消息。
 - Astra 的 `16UC1` 深度图在程序内部由毫米转换为米。
 
-更完整的每次启动步骤请参阅 [小球追踪：下次启动说明](docs/WHEELTEC_网球追踪_下次启动说明.md)。未来功能规划请参阅 [docs/ROADMAP.md](docs/ROADMAP.md)。
+更完整的每次启动步骤请参阅 [小球追踪：下次启动说明](docs/WHEELTEC_网球追踪_下次启动说明.md)。未来功能规划请参阅 [中文未来计划](docs/ROADMAP_zh-CN.md)。
 
