@@ -11,6 +11,11 @@ The original HSV tracker remains available, and neither tracker publishes
 [`docs/YOLO_JETSON_SETUP_zh-CN.md`](docs/YOLO_JETSON_SETUP_zh-CN.md) for the
 Jetson setup and first-test workflow.
 
+The first Jetson Orin NX hardware test successfully detected and followed a
+tennis ball at reduced speed. See the
+[v0.3.0 Chinese update notes](docs/UPDATE_NOTES_v0.3.0_zh-CN.md) for measured
+rates, validated behavior, and current limitations.
+
 ## Safety design
 
 - The default launch starts only the tracker and cannot move the robot.
