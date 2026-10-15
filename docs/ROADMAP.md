@@ -1,5 +1,7 @@
 # Roadmap
 
+[English](ROADMAP.md) | [简体中文](ROADMAP_zh-CN.md)
+
 ## In progress: YOLO general ball detector
 
 - Add a lightweight YOLO detector as a second tracker implementation. The first implementation is included in version 0.3.0.
@@ -17,8 +19,9 @@
 
 - Extend the current stop-only lidar protection into a low-speed avoidance state machine.
 - Compare free space on the left and right before choosing a detour direction.
-- Handle temporary target loss while going around an obstacle.
-- Reacquire the ball before returning to normal tracking.
+- Treat target loss during a detour as a distinct case: turning around an obstacle can move the ball outside the front camera's field of view, and the current controller would immediately stop because target messages become invalid.
+- Preserve the last reliable target direction for a short, bounded interval while avoiding, then perform a controlled reacquisition turn instead of continuing blind motion.
+- Reacquire the ball before returning to normal tracking; stop safely if reacquisition times out.
 - Keep front and rear emergency-stop gates active throughout avoidance.
 - Start with the existing 2D lidar for local obstacle avoidance and evaluate its blind zones during hardware tests.
 - Add side, rear, or wide-angle cameras only if the lidar and front RGB-D camera do not provide sufficient coverage; additional cameras will require calibration, synchronization, and more compute.
