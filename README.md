@@ -16,6 +16,19 @@ small ball at reduced speed. See the
 [v0.3.0 Chinese update notes](docs/UPDATE_NOTES_v0.3.0_zh-CN.md) for measured
 rates, validated behavior, and current limitations.
 
+## Scope and prerequisites
+
+This repository is itself a ROS 2 Python package named
+`tennis_ball_follower_ros2`; it is not a complete robot software stack. It
+depends on WHEELTEC's `turn_on_wheeltec_robot` package, base driver, Astra RGB-D
+camera driver, and lidar driver.
+
+The validated platform uses ROS 2 Humble, a Jetson Orin NX, an Astra RGB-D
+camera, and an LSLIDAR N10Plus. Other robots or topic names require configuration
+changes. The YOLO tracker also requires Ultralytics and
+`/home/wheeltec/models/yolo11n.pt`; follow the
+[Jetson YOLO setup guide](docs/YOLO_JETSON_SETUP_zh-CN.md).
+
 ## Safety design
 
 - The default launch starts only the tracker and cannot move the robot.
@@ -33,21 +46,58 @@ stop.
 
 ## Install on the robot
 
-Copy this directory to the robot's workspace, then build it:
+Clone this repository directly into the workspace `src` directory. A downloaded
+ZIP also works, but the extracted package directory must contain `package.xml`
+directly rather than another nested copy of the repository directory.
 
 ```bash
 cd /home/wheeltec/wheeltec_ros2/src
+git clone https://github.com/jlj25/ROS2WheelTec.git tennis_ball_follower_ros2
+
+cd /home/wheeltec/wheeltec_ros2
+source /opt/ros/humble/setup.bash
 colcon build --packages-select tennis_ball_follower_ros2 --symlink-install
 source /home/wheeltec/wheeltec_ros2/install/setup.bash
+
+ros2 pkg prefix tennis_ball_follower_ros2
 ```
 
-## Stage 1: detection only
+The final command should print the installed package path. A missing
+`turn_on_wheeltec_robot` dependency means that the WHEELTEC vendor workspace is
+not present or has not been built.
 
-Start the Astra camera separately. If another user already has the camera node
-running in the same ROS domain, do not start a second camera node.
+## Stage 1: start the base, lidar, and camera
+
+In terminal 1:
 
 ```bash
-ros2 launch tennis_ball_follower_ros2 tennis_ball_follow.launch.py
+source /opt/ros/humble/setup.bash
+source /home/wheeltec/wheeltec_ros2/install/setup.bash
+ros2 launch turn_on_wheeltec_robot wheeltec_sensors.launch.py
+```
+
+This WHEELTEC launch file starts all three devices. Keep it running and do not
+start duplicate camera or lidar nodes. If a particular WHEELTEC model does not
+provide the combined launch file, run these in three separately sourced
+terminals:
+
+```bash
+ros2 launch turn_on_wheeltec_robot turn_on_wheeltec_robot.launch.py
+ros2 launch turn_on_wheeltec_robot wheeltec_camera.launch.py
+ros2 launch turn_on_wheeltec_robot wheeltec_lidar.launch.py
+```
+
+An Astra `Resource busy` error normally means that another process owns the
+camera. Check with the current user before terminating an unknown process.
+
+## Stage 2: detection only
+
+In terminal 2, start either YOLO:
+
+```bash
+source /opt/ros/humble/setup.bash
+source /home/wheeltec/wheeltec_ros2/install/setup.bash
+ros2 launch tennis_ball_follower_ros2 ball_yolo_follow.launch.py
 ```
 
 The default launch does not start the controller. Inspect:
@@ -58,27 +108,28 @@ ros2 topic echo /tennis_ball/position
 rqt_image_view
 ```
 
-In `rqt_image_view`, select `/tennis_ball/debug_image`. Adjust the HSV values in
-`config/tennis_ball.yaml` until only the target ball is white in the mask inset.
-
-After installing the optional YOLO runtime, start general ball detection with:
+or use the HSV fallback:
 
 ```bash
-ros2 launch tennis_ball_follower_ros2 ball_yolo_follow.launch.py
+ros2 launch tennis_ball_follower_ros2 tennis_ball_follow.launch.py
 ```
 
 Do not run the HSV and YOLO trackers simultaneously because they publish the
 same compatibility topics. The YOLO debug image is
-`/tennis_ball/yolo_debug_image`.
+`/tennis_ball/yolo_debug_image`; the HSV debug image is
+`/tennis_ball/debug_image`.
 
-## Stage 2: controller without enabling movement
+## Stage 3: controller without enabling movement
 
-Start the base and lidar, then start both package nodes:
+After the base, sensors, and one detector are working, start the controller in
+terminal 3:
 
 ```bash
-ros2 launch turn_on_wheeltec_robot turn_on_wheeltec_robot.launch.py
-ros2 launch turn_on_wheeltec_robot wheeltec_lidar.launch.py
-ros2 launch tennis_ball_follower_ros2 tennis_ball_follow.launch.py run_controller:=true
+source /opt/ros/humble/setup.bash
+source /home/wheeltec/wheeltec_ros2/install/setup.bash
+ros2 run tennis_ball_follower_ros2 tennis_ball_follower \
+  --ros-args \
+  --params-file /home/wheeltec/wheeltec_ros2/install/tennis_ball_follower_ros2/share/tennis_ball_follower_ros2/config/tennis_ball.yaml
 ```
 
 Confirm these states before enabling:
@@ -88,7 +139,7 @@ ros2 topic echo /tennis_ball_follower/state
 ros2 topic hz /scan
 ```
 
-## Stage 3: explicit enable and stop
+## Stage 4: explicit enable and stop
 
 Enable only after detection, depth, and lidar have been verified:
 
