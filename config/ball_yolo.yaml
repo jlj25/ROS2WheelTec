@@ -8,7 +8,9 @@ ball_yolo_tracker:
     debug_image_topic: /tennis_ball/yolo_debug_image
 
     # COCO class 32 is "sports ball". A future custom one-class model uses [0].
-    model_path: yolo11n.pt
+    # Keep the weight at a fixed local path; the robot may not be able to
+    # download GitHub release assets from the laboratory network.
+    model_path: /home/wheeltec/models/yolo11n.pt
     target_class_ids: [32]
     confidence_threshold: 0.35
     iou_threshold: 0.45
