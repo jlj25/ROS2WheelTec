@@ -4,6 +4,8 @@
 
 本软件包为 WHEELTEC ROS 2 小车提供基于 Astra RGB-D 相机的网球检测，以及独立启用的运动控制器。它不会修改厂商原有软件包。
 
+版本 0.3.0 新增了可选的 YOLO 通用小球检测器。原有 HSV 网球检测器仍然保留，YOLO 节点也不会直接控制小车。Jetson 安装与首次测试步骤见 [docs/YOLO_JETSON_SETUP_zh-CN.md](docs/YOLO_JETSON_SETUP_zh-CN.md)。
+
 ## 安全设计
 
 - 默认启动文件只运行检测器，不会控制小车运动。
@@ -52,6 +54,14 @@ ros2 launch tennis_ball_follower_ros2 tennis_ball_follow.launch.py
 ros2 topic echo /tennis_ball/visible --once
 ros2 topic echo /tennis_ball/position --once
 ```
+
+安装好 YOLO 运行环境后，可改用通用小球检测器：
+
+```bash
+ros2 launch tennis_ball_follower_ros2 ball_yolo_follow.launch.py
+```
+
+YOLO 和 HSV 检测器会发布相同的控制接口，因此不能同时启动。YOLO 调试图话题为 `/tennis_ball/yolo_debug_image`。
 
 ## 第二阶段：启动控制器
 
