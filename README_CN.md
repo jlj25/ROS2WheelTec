@@ -1,19 +1,19 @@
-# WHEELTEC ROS 2 网球视觉跟随
+# WHEELTEC ROS 2 小球视觉跟随
 
 [English](README.md) | [简体中文](README_CN.md)
 
-本软件包为 WHEELTEC ROS 2 小车提供基于 Astra RGB-D 相机的网球检测，以及独立启用的运动控制器。它不会修改厂商原有软件包。
+本软件包为 WHEELTEC ROS 2 小车提供基于 Astra RGB-D 相机的小球检测，以及独立启用的运动控制器。它不会修改厂商原有软件包。
 
-版本 0.3.0 新增了可选的 YOLO 通用小球检测器。原有 HSV 网球检测器仍然保留，YOLO 节点也不会直接控制小车。Jetson 安装与首次测试步骤见 [docs/YOLO_JETSON_SETUP_zh-CN.md](docs/YOLO_JETSON_SETUP_zh-CN.md)。
+版本 0.3.0 新增了可选的 YOLO 通用小球检测器。原有 HSV 小球检测器仍然保留，YOLO 节点也不会直接控制小车。Jetson 安装与首次测试步骤见 [docs/YOLO_JETSON_SETUP_zh-CN.md](docs/YOLO_JETSON_SETUP_zh-CN.md)。
 
-首轮 Jetson Orin NX 实机测试已经完成：网球检测、RGB-D 测距和低速跟随均正常。现场结果与已知限制见 [docs/UPDATE_NOTES_v0.3.0_zh-CN.md](docs/UPDATE_NOTES_v0.3.0_zh-CN.md)。
+首轮 Jetson Orin NX 实机测试已经完成：小球检测、RGB-D 测距和低速跟随均正常。现场结果与已知限制见 [docs/UPDATE_NOTES_v0.3.0_zh-CN.md](docs/UPDATE_NOTES_v0.3.0_zh-CN.md)。
 
 ## 安全设计
 
 - 默认启动文件只运行检测器，不会控制小车运动。
 - 运动控制器独立启动，并且每次启动时默认为 `DISABLED`。
 - 小车运动要求目标数据与激光雷达数据均保持新鲜。
-- 网球丢失、雷达断流或检测到障碍物时立即停止。
+- 小球丢失、雷达断流或检测到障碍物时立即停止。
 - 距离过近时允许低速倒车修正，并使用独立的后方雷达安全区。
 - 当前最大前进速度为 `0.25 m/s`，最大倒车速度为 `0.06 m/s`，最大角速度为 `0.55 rad/s`。
 - 目标距离为 `0.50 m`，距离死区为 `0.03 m`。
@@ -112,7 +112,7 @@ ros2 topic pub --once \
 
 ## 倒车修正
 
-当网球距离小于约 `0.47 m` 时，小车会以不超过 `0.06 m/s` 的速度倒车；距离约为 `0.47～0.53 m` 时停止前后移动。倒车仅在雷达数据正常且后方 `0.45 m` 范围内无障碍时允许，否则进入 `REAR_OBSTACLE_STOP`。
+当小球距离小于约 `0.47 m` 时，小车会以不超过 `0.06 m/s` 的速度倒车；距离约为 `0.47～0.53 m` 时停止前后移动。倒车仅在雷达数据正常且后方 `0.45 m` 范围内无障碍时允许，否则进入 `REAR_OBSTACLE_STOP`。
 
 ## 话题与单位
 
@@ -121,5 +121,5 @@ ros2 topic pub --once \
 - `distance` 使用毫米，以兼容 WHEELTEC 原有消息。
 - Astra 的 `16UC1` 深度图在程序内部由毫米转换为米。
 
-更完整的每次启动步骤请参阅 [docs/WHEELTEC_网球追踪_下次启动说明.md](docs/WHEELTEC_网球追踪_下次启动说明.md)。未来功能规划请参阅 [docs/ROADMAP.md](docs/ROADMAP.md)。
+更完整的每次启动步骤请参阅 [小球追踪：下次启动说明](docs/WHEELTEC_网球追踪_下次启动说明.md)。未来功能规划请参阅 [docs/ROADMAP.md](docs/ROADMAP.md)。
 
