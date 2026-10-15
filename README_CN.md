@@ -6,6 +6,8 @@
 
 版本 0.3.0 新增了可选的 YOLO 通用小球检测器。原有 HSV 网球检测器仍然保留，YOLO 节点也不会直接控制小车。Jetson 安装与首次测试步骤见 [docs/YOLO_JETSON_SETUP_zh-CN.md](docs/YOLO_JETSON_SETUP_zh-CN.md)。
 
+首轮 Jetson Orin NX 实机测试已经完成：网球检测、RGB-D 测距和低速跟随均正常。现场结果与已知限制见 [docs/UPDATE_NOTES_v0.3.0_zh-CN.md](docs/UPDATE_NOTES_v0.3.0_zh-CN.md)。
+
 ## 安全设计
 
 - 默认启动文件只运行检测器，不会控制小车运动。
