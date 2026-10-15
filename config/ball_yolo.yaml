@@ -1,0 +1,36 @@
+ball_yolo_tracker:
+  ros__parameters:
+    color_image_topic: /camera/color/image_raw
+    depth_image_topic: /camera/depth/image_raw
+    camera_info_topic: /camera/color/camera_info
+    position_topic: /tennis_ball/position
+    visible_topic: /tennis_ball/visible
+    debug_image_topic: /tennis_ball/yolo_debug_image
+
+    # COCO class 32 is "sports ball". A future custom one-class model uses [0].
+    model_path: yolo11n.pt
+    target_class_ids: [32]
+    confidence_threshold: 0.35
+    iou_threshold: 0.45
+    image_size: 640
+    max_detections: 10
+    device: "0"
+    use_half_precision: true
+
+    # Prefer a detection near the ball selected in the previous frame.
+    tracking_memory_s: 0.50
+    tracking_position_weight: 0.25
+
+    min_depth_m: 0.30
+    max_depth_m: 3.00
+    minimum_depth_samples: 8
+    depth_roi_scale: 0.50
+    depth_unit_scale: 0.0
+
+    # Used only when Astra does not return valid depth on the ball.
+    # Change this value when testing a ball with a different physical diameter.
+    allow_monocular_fallback: true
+    ball_diameter_m: 0.067
+    frame_timeout_s: 0.30
+    publish_debug_image: true
+
