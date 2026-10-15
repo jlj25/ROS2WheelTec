@@ -88,7 +88,7 @@ export PATH="/home/wheeltec/wheeltec_ros2/install/tennis_ball_follower_ros2/lib/
 ros2 launch tennis_ball_follower_ros2 ball_yolo_follow.launch.py
 ```
 
-首次使用 `yolo11n.pt` 时，Ultralytics 可能需要联网下载模型。也可以提前把模型复制到小车，例如 `/home/wheeltec/models/yolo11n.pt`，再修改 `config/ball_yolo.yaml` 中的 `model_path`。
+实验室网络可能禁止下载 GitHub Release 附件。请在其他电脑下载官方 `yolo11n.pt`，复制到小车的 `/home/wheeltec/models/yolo11n.pt`。默认配置已经使用这个固定路径，因此运行时不会再次尝试联网下载。
 
 检查结果：
 
