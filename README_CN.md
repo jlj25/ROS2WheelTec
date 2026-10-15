@@ -8,6 +8,12 @@
 
 首轮 Jetson Orin NX 实机测试已经完成：小球检测、RGB-D 测距和低速跟随均正常。现场结果与已知限制见 [docs/UPDATE_NOTES_v0.3.0_zh-CN.md](docs/UPDATE_NOTES_v0.3.0_zh-CN.md)。
 
+## 适用范围与前置条件
+
+本仓库本身就是一个 ROS 2 Python 软件包，ROS 2 包名为 `tennis_ball_follower_ros2`。它不是完整的小车系统，依赖 WHEELTEC 原厂工作空间中的 `turn_on_wheeltec_robot` 软件包、底盘驱动、Astra RGB-D 相机驱动和激光雷达驱动。
+
+当前实机验证环境为 ROS 2 Humble、Jetson Orin NX、Astra RGB-D 相机和雷神 N10Plus 激光雷达。其他小车或不同的话题名称需要修改配置后才能使用。使用 YOLO 检测器还需要按照 [Jetson YOLO 安装说明](docs/YOLO_JETSON_SETUP_zh-CN.md)安装 Ultralytics，并把 `yolo11n.pt` 放到 `/home/wheeltec/models/yolo11n.pt`。
+
 ## 安全设计
 
 - 默认启动文件只运行检测器，不会控制小车运动。
@@ -23,15 +29,23 @@
 
 ## 安装到小车
 
-将软件包复制到小车工作空间的 `src` 目录，然后编译：
+推荐直接把本仓库克隆到小车工作空间的 `src` 目录。也可以下载 ZIP，但解压后的目录必须直接包含 `package.xml`，不能多套一层同名目录。
 
 ```bash
+cd /home/wheeltec/wheeltec_ros2/src
+git clone https://github.com/jlj25/ROS2WheelTec.git tennis_ball_follower_ros2
+
 cd /home/wheeltec/wheeltec_ros2
 source /opt/ros/humble/setup.bash
 colcon build \
   --packages-select tennis_ball_follower_ros2 \
   --symlink-install
+source /home/wheeltec/wheeltec_ros2/install/setup.bash
+
+ros2 pkg prefix tennis_ball_follower_ros2
 ```
+
+最后一条命令应输出本包的安装路径。如果提示缺少 `turn_on_wheeltec_robot`，说明当前不是配套的 WHEELTEC 工作空间，或原厂软件包尚未编译。
 
 每个新终端都需要加载 ROS 2 环境。若工作空间顶层环境未能发现本包，可使用：
 
@@ -42,12 +56,35 @@ export PYTHONPATH="/home/wheeltec/wheeltec_ros2/install/tennis_ball_follower_ros
 export PATH="/home/wheeltec/wheeltec_ros2/install/tennis_ball_follower_ros2/lib/tennis_ball_follower_ros2:$PATH"
 ```
 
-## 第一阶段：只启动检测器
+## 第一阶段：启动底盘、雷达和相机
 
-相机已经被其他进程使用时，不要重复启动相机节点。
+在终端 1 中运行：
 
 ```bash
-ros2 launch tennis_ball_follower_ros2 tennis_ball_follow.launch.py
+source /opt/ros/humble/setup.bash
+source /home/wheeltec/wheeltec_ros2/install/setup.bash
+
+ros2 launch turn_on_wheeltec_robot wheeltec_sensors.launch.py
+```
+
+这个原厂启动文件会同时启动底盘、雷达和相机，保持该终端运行，不要重复启动相机或雷达节点。如果该组合启动文件不适用于其他 WHEELTEC 型号，也可以分别在三个终端运行：
+
+```bash
+ros2 launch turn_on_wheeltec_robot turn_on_wheeltec_robot.launch.py
+ros2 launch turn_on_wheeltec_robot wheeltec_camera.launch.py
+ros2 launch turn_on_wheeltec_robot wheeltec_lidar.launch.py
+```
+
+每个命令都需要在已加载 ROS 2 和工作空间环境的新终端中运行。相机报告 `Resource busy` 通常表示相机已被其他进程占用；先确认现有节点或询问使用者，不要直接结束不明进程。
+
+## 第二阶段：只启动检测器
+
+在终端 2 中选择一种检测器。使用 YOLO：
+
+```bash
+source /opt/ros/humble/setup.bash
+source /home/wheeltec/wheeltec_ros2/install/setup.bash
+ros2 launch tennis_ball_follower_ros2 ball_yolo_follow.launch.py
 ```
 
 默认启动方式不会发布 `/cmd_vel`。检查检测结果：
@@ -57,19 +94,22 @@ ros2 topic echo /tennis_ball/visible --once
 ros2 topic echo /tennis_ball/position --once
 ```
 
-安装好 YOLO 运行环境后，可改用通用小球检测器：
+如果 YOLO 环境尚未配置，可以改用 HSV 颜色检测器：
 
 ```bash
-ros2 launch tennis_ball_follower_ros2 ball_yolo_follow.launch.py
+ros2 launch tennis_ball_follower_ros2 tennis_ball_follow.launch.py
 ```
 
 YOLO 和 HSV 检测器会发布相同的控制接口，因此不能同时启动。YOLO 调试图话题为 `/tennis_ball/yolo_debug_image`。
 
-## 第二阶段：启动控制器
+## 第三阶段：启动控制器
 
-底盘、雷达和相机正常运行后，启动控制器：
+确认底盘、雷达、相机和检测器正常运行后，在终端 3 启动控制器：
 
 ```bash
+source /opt/ros/humble/setup.bash
+source /home/wheeltec/wheeltec_ros2/install/setup.bash
+
 ros2 run tennis_ball_follower_ros2 tennis_ball_follower \
   --ros-args \
   --params-file /home/wheeltec/wheeltec_ros2/install/tennis_ball_follower_ros2/share/tennis_ball_follower_ros2/config/tennis_ball.yaml
@@ -90,7 +130,7 @@ ros2 topic info /cmd_vel -v
 
 `/scan` 应约为 `10 Hz`，并且 `/cmd_vel` 应只有 `tennis_ball_follower` 一个发布者，订阅者应包含 `wheeltec_robot`。
 
-## 启用与停止
+## 第四阶段：启用与停止
 
 确认环境安全后启用：
 
