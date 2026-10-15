@@ -108,6 +108,26 @@ ros2 launch tennis_ball_follower_ros2 tennis_ball_follow.launch.py
 
 YOLO 和 HSV 检测器会发布相同的控制接口，因此不能同时启动。YOLO 调试图话题为 `/tennis_ball/yolo_debug_image`。
 
+### 可选：查看 YOLO 识别框
+
+安装并启动图像查看器：
+
+```bash
+sudo apt install ros-humble-rqt-image-view
+source /opt/ros/humble/setup.bash
+rqt_image_view
+```
+
+在窗口顶部的话题下拉框中选择：
+
+```text
+/tennis_ball/yolo_debug_image
+```
+
+绿色框表示 YOLO 当前选中的小球，标签同时显示置信度和 RGB-D 距离。通过 SSH 查看图形界面时，需要先在电脑端启动 X Server（Windows 可使用 XLaunch），并使用 `ssh -Y wheeltec@<小车IP>` 连接；`echo $DISPLAY` 应有输出。
+
+配置文件中的 `publish_debug_image` 必须为 `true` 才会发布调试图。查看完成后可以关闭 `rqt_image_view`；追求最高输出频率时可把该参数设为 `false`，这不会关闭小球检测或控制话题。
+
 ## 第三阶段：启动控制器
 
 确认底盘、雷达、相机和检测器正常运行后，在终端 3 启动控制器：
