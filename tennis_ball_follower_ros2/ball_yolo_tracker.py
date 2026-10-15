@@ -26,6 +26,9 @@ class BallYoloTracker(Node):
         self._declare_parameters()
         self._load_parameters()
 
+        # Jetson uses NVIDIA-specific PyTorch and OpenCV builds. Never let
+        # Ultralytics replace system packages automatically at runtime.
+        os.environ.setdefault('YOLO_AUTOINSTALL', 'False')
         try:
             from ultralytics import YOLO
         except ImportError as exc:
